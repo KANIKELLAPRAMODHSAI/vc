@@ -1,4 +1,4 @@
-# app.py
+
 import streamlit as st
 import requests
 import time
@@ -6,14 +6,13 @@ import time
 FASTAPI_URL = "http://localhost:8000"
 st.set_page_config(page_title="VectorHire Pro", layout="wide", page_icon="⚡")
 
-# --- SESSION STATE ISOLATION (MULTI-USER SUPPORT) ---
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
     st.session_state.role = None
     st.session_state.username = ""
 
 def authenticate(role, username, password):
-    # Simulating a database lookup or JWT validation
+
     if username and password:
         st.session_state.logged_in = True
         st.session_state.role = role
@@ -22,7 +21,6 @@ def authenticate(role, username, password):
     else:
         st.error("Invalid credentials. Payload missing required fields.")
 
-# --- DYNAMIC IAM DASHBOARD ---
 if not st.session_state.logged_in:
     st.markdown("<h1 style='text-align: center; margin-top: 50px;'>⚡ VectorHire OS</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align: center; color: gray;'>Identity & Access Management (IAM)</p>", unsafe_allow_html=True)
@@ -46,7 +44,6 @@ if not st.session_state.logged_in:
             authenticate("client", c_user, c_pass)
             st.rerun()
 
-# --- FREELANCER DASHBOARD (RBAC) ---
 elif st.session_state.role == "freelancer":
     with st.sidebar:
         st.markdown(f"**Session ID:** `{st.session_state.username}`")
@@ -68,7 +65,7 @@ elif st.session_state.role == "freelancer":
                 st.write("🧠 Generating dense vectors via sentence-transformers...")
                 
                 files = {"file": (uploaded_file.name, uploaded_file.getvalue(), "application/pdf")}
-                # Pass dynamic username from session state to backend
+
                 data = {"candidate_name": st.session_state.username}
                 response = requests.post(f"{FASTAPI_URL}/freelancer_join/", files=files, data=data)
                 
@@ -87,7 +84,6 @@ elif st.session_state.role == "freelancer":
         else:
             st.error("Missing payload: PDF file required.")
 
-# --- CLIENT DASHBOARD (RBAC) ---
 elif st.session_state.role == "client":
     with st.sidebar:
         st.markdown(f"**Client Node:** `{st.session_state.username}`")
